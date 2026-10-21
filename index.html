@@ -83,6 +83,14 @@
   .close { text-align: center; display: grid; gap: 1rem; justify-items: center; }
   .close p { color: var(--muted); max-width: 32rem; margin: 0; }
   #rsvp-msg { color: var(--fg); min-height: 1.5em; }
+  .rsvp { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: center; width: 100%; max-width: 30rem; }
+  .rsvp input {
+    flex: 1 1 14rem; min-width: 0; font: 400 1.05rem var(--font-body); color: var(--fg);
+    background: var(--surface); border: 1px solid var(--line); border-radius: 980px; padding: .75rem 1.25rem;
+  }
+  .rsvp input::placeholder { color: var(--muted); }
+  .rsvp input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .btn:disabled { opacity: .5; cursor: default; }
   footer { color: #6e6e73; font-size: .8rem; text-align: center; padding-block: 2rem 3rem; border-top: 1px solid var(--line); }
 
   @media (max-width: 480px) {
@@ -109,7 +117,7 @@
       <p class="tagline">Una velada para celebrar lo que construimos este año.</p>
       <p class="when">Sábado 24 de octubre de 2026 · 8:00 p. m.</p>
       <div class="ctas">
-        <button class="btn" id="rsvp" type="button">Confirmar asistencia</button>
+        <a class="btn" href="#confirmar">Confirmar asistencia</a>
         <a class="link" href="#detalles">Ver detalles ›</a>
       </div>
       <div class="orb" aria-hidden="true"></div>
@@ -153,10 +161,13 @@
       </div>
     </section>
 
-    <section class="close">
+    <section class="close" id="confirmar">
       <h2 style="margin:0">Nos vemos ahí.</h2>
       <p>Confirma antes del jueves 22 de octubre para que reservemos tu lugar.</p>
-      <button class="btn" id="rsvp2" type="button">Confirmar asistencia</button>
+      <form class="rsvp" id="rsvp-form">
+        <input id="rsvp-name" name="nombre" type="text" placeholder="Tu nombre" autocomplete="name" required aria-label="Tu nombre">
+        <button class="btn" id="rsvp-send" type="submit">Confirmar asistencia</button>
+      </form>
       <p id="rsvp-msg" aria-live="polite"></p>
     </section>
   </div>
@@ -175,12 +186,34 @@
   tick(); setInterval(tick, 1000);
 
   const msg = document.getElementById('rsvp-msg');
-  const confirmRsvp = () => {
-    msg.textContent = '¡Genial! Esta es una versión de prueba: la confirmación todavía no se envía a nadie.';
-    msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  };
-  document.getElementById('rsvp').addEventListener('click', confirmRsvp);
-  document.getElementById('rsvp2').addEventListener('click', confirmRsvp);
+  const form = document.getElementById('rsvp-form');
+  const send = document.getElementById('rsvp-send');
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const nombre = document.getElementById('rsvp-name').value.trim();
+    if (!nombre) return;
+    send.disabled = true;
+    msg.textContent = 'Enviando tu confirmación…';
+    try {
+      const res = await fetch('https://formsubmit.co/ajax/anthonyriossa@outlook.com', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({
+          _subject: `${nombre} confirmó su asistencia a Noche Nube`,
+          _template: 'table',
+          nombre,
+          respuesta: 'Asistiré',
+          evento: 'Noche Nube · sábado 24 de octubre, 8:00 p. m.'
+        })
+      });
+      if (!res.ok) throw new Error(res.status);
+      msg.textContent = `¡Listo, ${nombre}! Tu asistencia quedó confirmada.`;
+      form.hidden = true;
+    } catch {
+      msg.textContent = 'No se pudo enviar la confirmación. Revisa tu conexión e inténtalo de nuevo.';
+      send.disabled = false;
+    }
+  });
 </script>
 </body>
 </html>
