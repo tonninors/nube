@@ -7,6 +7,7 @@
 <style>
   html { box-sizing: border-box; } *, *::before, *::after { box-sizing: inherit; }
   html, body { margin: 0; background: #000; }
+  [hidden] { display: none !important; }
   /* Layout: keynote de una sola columna; héroe centrado, cuenta atrás, cuadrícula de detalles, cierre */
   :root {
     --bg: #000000;
@@ -83,6 +84,17 @@
   .close { text-align: center; display: grid; gap: 1rem; justify-items: center; }
   .close p { color: var(--muted); max-width: 32rem; margin: 0; }
   #rsvp-msg { color: var(--fg); min-height: 1.5em; }
+  .party { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 16px; background: rgba(0,0,0,.6); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+  .party-card { background: var(--surface); border: 1px solid var(--line); border-radius: 28px; padding: 2.5rem 2rem; max-width: 26rem; width: 100%; text-align: center; display: grid; gap: .75rem; justify-items: center; }
+  .party-card h2 { margin: 0; font-size: clamp(1.8rem, 6vw, 2.4rem); background: linear-gradient(100deg, var(--grad-a), var(--grad-b) 50%, var(--grad-c)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .party-card p { margin: 0 0 .5rem; color: var(--muted); }
+  .party-emoji { font-size: 4rem; line-height: 1; }
+  @media (prefers-reduced-motion: no-preference) {
+    .party:not([hidden]) .party-card { animation: pop .5s cubic-bezier(.2,1.4,.4,1) both; }
+    .party:not([hidden]) .party-emoji { animation: wiggle 1.2s ease-in-out .4s infinite; }
+    @keyframes pop { from { transform: scale(.7); opacity: 0; } }
+    @keyframes wiggle { 0%,100% { transform: rotate(0); } 25% { transform: rotate(-12deg) scale(1.1); } 75% { transform: rotate(12deg) scale(1.1); } }
+  }
   .rsvp { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: center; width: 100%; max-width: 30rem; }
   .rsvp input {
     flex: 1 1 14rem; min-width: 0; font: 400 1.05rem var(--font-body); color: var(--fg);
@@ -177,6 +189,15 @@
   <footer><div class="wrap">Invitación de ejemplo · Noche Nube 2026</div></footer>
 </main>
 
+<div class="party" id="party" hidden>
+  <div class="party-card" role="dialog" aria-modal="true" aria-labelledby="party-title">
+    <div class="party-emoji" aria-hidden="true">🎉</div>
+    <h2 id="party-title">¡Nos vemos el sábado!</h2>
+    <p id="party-text"></p>
+    <button class="btn" id="party-close" type="button">Genial</button>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 <script>
   const target = new Date('2026-10-24T20:00:00-05:00').getTime();
   const pad = n => String(n).padStart(2, '0');
@@ -192,8 +213,25 @@
   const form = document.getElementById('rsvp-form');
   const send = document.getElementById('rsvp-send');
   const no = document.getElementById('rsvp-no');
-  const excusas = ['¿Seguro? 🥺', 'Piénsalo mejor', 'Ups, casi', 'No te escapes', 'Habrá comida 🍽️', 'Inténtalo otra vez', 'Nop'];
-  let intentos = 0;
+  const excusas = ['¿Seguro? 🥺', 'Piénsalo mejor', 'Ups, casi', 'No te escapes', 'Habrá comida 🍽️', 'Inténtalo otra vez', 'Nop',
+    'Muy lento 🐢', 'Por aquí no', '¿Y si sí?', 'Error 404', 'Ni lo sueñes', 'Casi casi', 'Atrápame 🏃', 'Respuesta inválida', 'Nel 🙅'];
+  const frases = [
+    'Esa opción no está disponible. Solo queda confirmar 😉',
+    'El botón de rechazar está de vacaciones 🏖️',
+    'Tu dedo dice "no", pero tu corazón dice "sí" 💙',
+    'Rechazar requiere un permiso firmado por Anthony 📝',
+    'Habrá comida, música y buena compañía. ¿De verdad?',
+    'Error 418: no se puede rechazar esta invitación ☕',
+    'El sistema detectó que en el fondo sí quieres venir',
+    'Ese botón es decorativo, como tus excusas 😌',
+    'Rechazo no procesado. Intenta con "Confirmar" 👆',
+    'Lo sentimos, el "no" se agotó por alta demanda',
+    'Hasta el botón sabe que tienes que venir 🎶',
+    'Tu falta ya fue rechazada por el comité organizador',
+    'La única salida es la pista de baile 🕺',
+    'Tranquilo, el botón de confirmar no muerde'
+  ];
+  const azar = (arr, prev) => { let v; do { v = arr[Math.floor(Math.random() * arr.length)]; } while (v === prev && arr.length > 1); return v; };
   function huir(e) {
     if (e) e.preventDefault();
     const r = no.getBoundingClientRect();
@@ -204,18 +242,38 @@
     do {
       x = m + Math.random() * Math.max(0, maxX - m);
       y = m + Math.random() * Math.max(0, maxY - m);
-    } while (Math.hypot(x - r.left, y - r.top) < 120 && ++n < 20);
+      const sr = send.getBoundingClientRect();
+      var tapa = x < sr.right + 12 && x + r.width > sr.left - 12 && y < sr.bottom + 12 && y + r.height > sr.top - 12;
+    } while ((tapa || Math.hypot(x - r.left, y - r.top) < 120) && ++n < 40);
     if (!no.classList.contains('fugitive')) {
       no.style.left = r.left + 'px'; no.style.top = r.top + 'px';
       no.classList.add('fugitive');
       no.getBoundingClientRect();
     }
     no.style.left = x + 'px'; no.style.top = y + 'px';
-    no.textContent = excusas[intentos++ % excusas.length];
+    no.textContent = azar(excusas, no.textContent);
+    msg.textContent = azar(frases, msg.textContent);
   }
   no.addEventListener('pointerenter', huir);
   no.addEventListener('pointerdown', huir);
-  no.addEventListener('click', e => { huir(e); msg.textContent = 'Esa opción no está disponible. Solo queda confirmar 😉'; });
+  no.addEventListener('click', huir);
+
+  const party = document.getElementById('party');
+  document.getElementById('party-close').addEventListener('click', () => { party.hidden = true; });
+  function celebrar(nombre) {
+    document.getElementById('party-text').textContent = `Gracias, ${nombre}. Tu lugar en Noche Nube está reservado. Sábado 24 de octubre, 8:00 p. m.`;
+    party.hidden = false;
+    if (typeof confetti !== 'function' || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const colors = ['#6e8bff', '#c86dd7', '#ff9f6b', '#2997ff', '#f5f5f7'];
+    const opts = { colors, zIndex: 60, disableForReducedMotion: true };
+    confetti({ ...opts, particleCount: 140, spread: 90, origin: { y: .6 } });
+    const end = Date.now() + 2500;
+    (function lluvia() {
+      confetti({ ...opts, particleCount: 4, angle: 60, spread: 60, origin: { x: 0, y: .7 } });
+      confetti({ ...opts, particleCount: 4, angle: 120, spread: 60, origin: { x: 1, y: .7 } });
+      if (Date.now() < end) requestAnimationFrame(lluvia);
+    })();
+  }
 
   form.addEventListener('submit', async e => {
     e.preventDefault();
@@ -237,6 +295,7 @@
       });
       if (!res.ok) throw new Error(res.status);
       msg.textContent = `¡Listo, ${nombre}! Tu asistencia quedó confirmada.`;
+      celebrar(nombre);
       form.hidden = true;
       no.hidden = true;
     } catch {
