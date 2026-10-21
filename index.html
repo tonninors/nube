@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Noche Nube 2026</title>
+<style>
+  html { box-sizing: border-box; } *, *::before, *::after { box-sizing: inherit; }
+  html, body { margin: 0; background: #000; }
+  /* Layout: keynote de una sola columna; héroe centrado, cuenta atrás, cuadrícula de detalles, cierre */
+  :root {
+    --bg: #000000;
+    --surface: #161617;
+    --fg: #f5f5f7;
+    --muted: #a1a1a6;
+    --line: #2a2a2d;
+    --accent: #2997ff;
+    --grad-a: #6e8bff;
+    --grad-b: #c86dd7;
+    --grad-c: #ff9f6b;
+    --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color-scheme: dark;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg); color: var(--fg);
+    font-family: var(--font-body); font-size: 17px; line-height: 1.47;
+    -webkit-font-smoothing: antialiased; letter-spacing: -.01em;
+  }
+  .wrap {
+    max-width: 980px; margin: 0 auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+  }
+  section { padding-block: 5.5rem; }
+
+  .hero { text-align: center; padding-block: 7rem 4.5rem; display: grid; gap: 1.25rem; justify-items: center; }
+  .eyebrow { font-size: 1.15rem; font-weight: 600; color: var(--muted); margin: 0; }
+  h1 {
+    font-family: var(--font-display); font-weight: 700;
+    font-size: clamp(3.2rem, 11vw, 7.5rem); line-height: 1; letter-spacing: -.045em;
+    margin: 0; text-wrap: balance;
+    background: linear-gradient(100deg, var(--grad-a), var(--grad-b) 50%, var(--grad-c));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .tagline { font-family: var(--font-display); font-size: clamp(1.4rem, 3.4vw, 2rem); font-weight: 600; letter-spacing: -.02em; margin: 0; max-width: 36rem; text-wrap: balance; }
+  .when { color: var(--muted); font-size: 1.1rem; margin: .25rem 0 0; }
+  .ctas { display: flex; flex-wrap: wrap; gap: 1.25rem; justify-content: center; align-items: center; margin-top: 1rem; }
+  .btn {
+    font: 400 1.05rem var(--font-body); color: #fff; background: var(--accent);
+    border: 0; border-radius: 980px; padding: .75rem 1.5rem; cursor: pointer; text-decoration: none;
+  }
+  .btn:hover { filter: brightness(1.1); }
+  .link { color: var(--accent); text-decoration: none; font-size: 1.05rem; }
+  .link:hover { text-decoration: underline; }
+  .btn:focus-visible, .link:focus-visible { outline: 3px solid var(--fg); outline-offset: 3px; }
+
+  .orb {
+    width: min(520px, 100%); aspect-ratio: 2 / 1; max-width: 100%; margin: 2.5rem auto 0;
+    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    background: radial-gradient(ellipse at 50% 100%, var(--grad-c) 0%, var(--grad-b) 30%, var(--grad-a) 55%, transparent 72%);
+    filter: blur(6px); opacity: .9;
+  }
+
+  .countdown { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; text-align: center; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding-block: 2.5rem; }
+  .countdown div { display: grid; gap: .2rem; }
+  .num { font-family: var(--font-display); font-weight: 700; font-size: clamp(2.2rem, 7vw, 4rem); letter-spacing: -.03em; font-variant-numeric: tabular-nums; line-height: 1; }
+  .unit { color: var(--muted); font-size: .85rem; text-transform: uppercase; letter-spacing: .08em; }
+
+  h2 { font-family: var(--font-display); font-size: clamp(2rem, 5.5vw, 3.5rem); font-weight: 700; letter-spacing: -.035em; line-height: 1.05; margin: 0 0 2.5rem; text-align: center; text-wrap: balance; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; }
+  .tile { background: var(--surface); border-radius: 22px; padding: 2rem; display: grid; gap: .4rem; align-content: start; min-width: 0; }
+  .tile .label { color: var(--muted); font-size: .95rem; font-weight: 600; }
+  .tile .value { font-family: var(--font-display); font-size: 1.6rem; font-weight: 700; letter-spacing: -.02em; line-height: 1.15; }
+  .tile .note { color: var(--muted); font-size: .95rem; }
+
+  .agenda { max-width: 640px; margin: 0 auto; display: grid; }
+  .agenda .item { display: grid; grid-template-columns: 5rem 1fr; gap: 1rem; padding-block: 1.1rem; border-bottom: 1px solid var(--line); }
+  .agenda time { color: var(--muted); font-variant-numeric: tabular-nums; }
+  .agenda strong { font-weight: 600; }
+
+  .close { text-align: center; display: grid; gap: 1rem; justify-items: center; }
+  .close p { color: var(--muted); max-width: 32rem; margin: 0; }
+  #rsvp-msg { color: var(--fg); min-height: 1.5em; }
+  footer { color: #6e6e73; font-size: .8rem; text-align: center; padding-block: 2rem 3rem; border-top: 1px solid var(--line); }
+
+  @media (max-width: 480px) {
+    .countdown { grid-template-columns: repeat(2, 1fr); row-gap: 1.75rem; }
+    .hero { padding-block: 4.5rem 3rem; }
+    section { padding-block: 4rem; }
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .hero > * { animation: rise .9s cubic-bezier(.2,.7,.2,1) both; }
+    .hero > *:nth-child(2) { animation-delay: .08s; }
+    .hero > *:nth-child(3) { animation-delay: .16s; }
+    .hero > *:nth-child(n+4) { animation-delay: .24s; }
+    @keyframes rise { from { transform: translateY(14px); opacity: .001; } }
+  }
+</style>
+</head>
+<body>
+
+<main>
+  <div class="wrap">
+    <header class="hero">
+      <p class="eyebrow">Estás invitado</p>
+      <h1>Noche Nube.</h1>
+      <p class="tagline">Una velada para celebrar lo que construimos este año.</p>
+      <p class="when">Sábado 24 de octubre de 2026 · 8:00 p. m.</p>
+      <div class="ctas">
+        <button class="btn" id="rsvp" type="button">Confirmar asistencia</button>
+        <a class="link" href="#detalles">Ver detalles ›</a>
+      </div>
+      <div class="orb" aria-hidden="true"></div>
+    </header>
+
+    <div class="countdown" aria-label="Cuenta atrás para el evento">
+      <div><span class="num" id="d">--</span><span class="unit">días</span></div>
+      <div><span class="num" id="h">--</span><span class="unit">horas</span></div>
+      <div><span class="num" id="m">--</span><span class="unit">minutos</span></div>
+      <div><span class="num" id="s">--</span><span class="unit">segundos</span></div>
+    </div>
+
+    <section id="detalles">
+      <h2>Todo lo que necesitas saber.</h2>
+      <div class="grid">
+        <div class="tile">
+          <span class="label">Cuándo</span>
+          <span class="value">Sáb 24 oct 2026</span>
+          <span class="note">Desde las 8:00 p. m.</span>
+        </div>
+        <div class="tile">
+          <span class="label">Dónde</span>
+          <span class="value">Muy pronto</span>
+          <span class="note">Te avisaremos el lugar antes del evento.</span>
+        </div>
+        <div class="tile">
+          <span class="label">Dress code</span>
+          <span class="value">Elegante sport</span>
+          <span class="note">Ven cómodo y con ganas de celebrar.</span>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>La noche, paso a paso.</h2>
+      <div class="agenda">
+        <div class="item"><time>8:00</time><span><strong>Bienvenida.</strong> Cóctel de recepción.</span></div>
+        <div class="item"><time>8:45</time><span><strong>Keynote.</strong> El año en diez minutos.</span></div>
+        <div class="item"><time>9:15</time><span><strong>Cena.</strong> Menú de autor de cuatro tiempos.</span></div>
+        <div class="item"><time>10:30</time><span><strong>Música en vivo.</strong> Y pista abierta hasta el cierre.</span></div>
+      </div>
+    </section>
+
+    <section class="close">
+      <h2 style="margin:0">Nos vemos ahí.</h2>
+      <p>Confirma antes del jueves 22 de octubre para que reservemos tu lugar.</p>
+      <button class="btn" id="rsvp2" type="button">Confirmar asistencia</button>
+      <p id="rsvp-msg" aria-live="polite"></p>
+    </section>
+  </div>
+  <footer><div class="wrap">Invitación de ejemplo · Noche Nube 2026</div></footer>
+</main>
+
+<script>
+  const target = new Date('2026-10-24T20:00:00-05:00').getTime();
+  const pad = n => String(n).padStart(2, '0');
+  const els = ['d','h','m','s'].map(id => document.getElementById(id));
+  function tick() {
+    let t = Math.max(0, target - Date.now()) / 1000;
+    const v = [Math.floor(t / 86400), Math.floor(t % 86400 / 3600), Math.floor(t % 3600 / 60), Math.floor(t % 60)];
+    els.forEach((el, i) => el.textContent = i === 0 ? v[i] : pad(v[i]));
+  }
+  tick(); setInterval(tick, 1000);
+
+  const msg = document.getElementById('rsvp-msg');
+  const confirmRsvp = () => {
+    msg.textContent = '¡Genial! Esta es una versión de prueba: la confirmación todavía no se envía a nadie.';
+    msg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+  document.getElementById('rsvp').addEventListener('click', confirmRsvp);
+  document.getElementById('rsvp2').addEventListener('click', confirmRsvp);
+</script>
+</body>
+</html>
