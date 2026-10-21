@@ -90,6 +90,8 @@
   }
   .rsvp input::placeholder { color: var(--muted); }
   .rsvp input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .btn-no { background: var(--surface); color: var(--fg); border: 1px solid var(--line); transition: left .25s ease, top .25s ease; z-index: 20; }
+  .btn-no.fugitive { position: fixed; }
   .btn:disabled { opacity: .5; cursor: default; }
   footer { color: #6e6e73; font-size: .8rem; text-align: center; padding-block: 2rem 3rem; border-top: 1px solid var(--line); }
 
@@ -167,6 +169,7 @@
       <form class="rsvp" id="rsvp-form">
         <input id="rsvp-name" name="nombre" type="text" placeholder="Tu nombre" autocomplete="name" required aria-label="Tu nombre">
         <button class="btn" id="rsvp-send" type="submit">Confirmar asistencia</button>
+        <button class="btn btn-no" id="rsvp-no" type="button">No podré</button>
       </form>
       <p id="rsvp-msg" aria-live="polite"></p>
     </section>
@@ -188,6 +191,32 @@
   const msg = document.getElementById('rsvp-msg');
   const form = document.getElementById('rsvp-form');
   const send = document.getElementById('rsvp-send');
+  const no = document.getElementById('rsvp-no');
+  const excusas = ['¿Seguro? 🥺', 'Piénsalo mejor', 'Ups, casi', 'No te escapes', 'Habrá comida 🍽️', 'Inténtalo otra vez', 'Nop'];
+  let intentos = 0;
+  function huir(e) {
+    if (e) e.preventDefault();
+    const r = no.getBoundingClientRect();
+    const m = 16;
+    const maxX = window.innerWidth - r.width - m;
+    const maxY = window.innerHeight - r.height - m;
+    let x, y, n = 0;
+    do {
+      x = m + Math.random() * Math.max(0, maxX - m);
+      y = m + Math.random() * Math.max(0, maxY - m);
+    } while (Math.hypot(x - r.left, y - r.top) < 120 && ++n < 20);
+    if (!no.classList.contains('fugitive')) {
+      no.style.left = r.left + 'px'; no.style.top = r.top + 'px';
+      no.classList.add('fugitive');
+      no.getBoundingClientRect();
+    }
+    no.style.left = x + 'px'; no.style.top = y + 'px';
+    no.textContent = excusas[intentos++ % excusas.length];
+  }
+  no.addEventListener('pointerenter', huir);
+  no.addEventListener('pointerdown', huir);
+  no.addEventListener('click', e => { huir(e); msg.textContent = 'Esa opción no está disponible. Solo queda confirmar 😉'; });
+
   form.addEventListener('submit', async e => {
     e.preventDefault();
     const nombre = document.getElementById('rsvp-name').value.trim();
@@ -209,6 +238,7 @@
       if (!res.ok) throw new Error(res.status);
       msg.textContent = `¡Listo, ${nombre}! Tu asistencia quedó confirmada.`;
       form.hidden = true;
+      no.hidden = true;
     } catch {
       msg.textContent = 'No se pudo enviar la confirmación. Revisa tu conexión e inténtalo de nuevo.';
       send.disabled = false;
