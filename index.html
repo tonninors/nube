@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Noche Nube 2026</title>
+<title>Para Nicole</title>
 <style>
   html { box-sizing: border-box; } *, *::before, *::after { box-sizing: inherit; }
   html, body { margin: 0; background: #000; }
@@ -126,9 +126,9 @@
 <main>
   <div class="wrap">
     <header class="hero">
-      <p class="eyebrow">Estás invitado</p>
-      <h1>Noche Nube.</h1>
-      <p class="tagline">Una velada para celebrar lo que construimos este año.</p>
+      <p class="eyebrow">Estás invitada</p>
+      <h1>Nicole.</h1>
+      <p class="tagline">Una noche especial, y no estaría completa sin ti.</p>
       <p class="when">Sábado 24 de octubre de 2026 · 8:00 p. m.</p>
       <div class="ctas">
         <a class="btn" href="#confirmar">Confirmar asistencia</a>
@@ -160,7 +160,7 @@
         <div class="tile">
           <span class="label">Dress code</span>
           <span class="value">Elegante sport</span>
-          <span class="note">Ven cómodo y con ganas de celebrar.</span>
+          <span class="note">Ven cómoda y con ganas de celebrar.</span>
         </div>
       </div>
     </section>
@@ -169,7 +169,7 @@
       <h2>La noche, paso a paso.</h2>
       <div class="agenda">
         <div class="item"><time>8:00</time><span><strong>Bienvenida.</strong> Cóctel de recepción.</span></div>
-        <div class="item"><time>8:45</time><span><strong>Keynote.</strong> El año en diez minutos.</span></div>
+        <div class="item"><time>8:45</time><span><strong>Brindis.</strong> Unas palabras y a celebrar.</span></div>
         <div class="item"><time>9:15</time><span><strong>Cena.</strong> Menú de autor de cuatro tiempos.</span></div>
         <div class="item"><time>10:30</time><span><strong>Música en vivo.</strong> Y pista abierta hasta el cierre.</span></div>
       </div>
@@ -177,16 +177,15 @@
 
     <section class="close" id="confirmar">
       <h2 style="margin:0">Nos vemos ahí.</h2>
-      <p>Confirma antes del jueves 22 de octubre para que reservemos tu lugar.</p>
+      <p>Confirma antes del jueves 22 de octubre para que te guardemos el mejor lugar.</p>
       <form class="rsvp" id="rsvp-form">
-        <input id="rsvp-name" name="nombre" type="text" placeholder="Tu nombre" autocomplete="name" required aria-label="Tu nombre">
         <button class="btn" id="rsvp-send" type="submit">Confirmar asistencia</button>
         <button class="btn btn-no" id="rsvp-no" type="button">No podré</button>
       </form>
       <p id="rsvp-msg" aria-live="polite"></p>
     </section>
   </div>
-  <footer><div class="wrap">Invitación de ejemplo · Noche Nube 2026</div></footer>
+  <footer><div class="wrap">Hecha especialmente para Nicole</div></footer>
 </main>
 
 <div class="party" id="party" hidden>
@@ -213,8 +212,8 @@
   const form = document.getElementById('rsvp-form');
   const send = document.getElementById('rsvp-send');
   const no = document.getElementById('rsvp-no');
-  const excusas = ['¿Seguro? 🥺', 'Piénsalo mejor', 'Ups, casi', 'No te escapes', 'Habrá comida 🍽️', 'Inténtalo otra vez', 'Nop',
-    'Muy lento 🐢', 'Por aquí no', '¿Y si sí?', 'Error 404', 'Ni lo sueñes', 'Casi casi', 'Atrápame 🏃', 'Respuesta inválida', 'Nel 🙅'];
+  const excusas = ['¿Segura? 🥺', 'Piénsalo mejor', 'Ups, casi', 'No te escapes', 'Habrá comida 🍽️', 'Inténtalo otra vez', 'Nop',
+    'Muy lenta 🐢', 'Por aquí no', '¿Y si sí?', 'Error 404', 'Ni lo sueñes', 'Casi casi', 'Atrápame 🏃', 'Respuesta inválida', 'Nel 🙅'];
   const frases = [
     'Esa opción no está disponible. Solo queda confirmar 😉',
     'El botón de rechazar está de vacaciones 🏖️',
@@ -224,12 +223,14 @@
     'Error 418: no se puede rechazar esta invitación ☕',
     'El sistema detectó que en el fondo sí quieres venir',
     'Ese botón es decorativo, como tus excusas 😌',
+    'Nicole, ya sabemos que vas a venir 😏',
+    'Sin ti no hay fiesta, así que no 🙅‍♀️',
     'Rechazo no procesado. Intenta con "Confirmar" 👆',
     'Lo sentimos, el "no" se agotó por alta demanda',
     'Hasta el botón sabe que tienes que venir 🎶',
     'Tu falta ya fue rechazada por el comité organizador',
     'La única salida es la pista de baile 🕺',
-    'Tranquilo, el botón de confirmar no muerde'
+    'Tranquila, el botón de confirmar no muerde'
   ];
   const azar = (arr, prev) => { let v; do { v = arr[Math.floor(Math.random() * arr.length)]; } while (v === prev && arr.length > 1); return v; };
   function huir(e) {
@@ -261,7 +262,7 @@
   const party = document.getElementById('party');
   document.getElementById('party-close').addEventListener('click', () => { party.hidden = true; });
   function celebrar(nombre) {
-    document.getElementById('party-text').textContent = `Gracias, ${nombre}. Tu lugar en Noche Nube está reservado. Sábado 24 de octubre, 8:00 p. m.`;
+    document.getElementById('party-text').textContent = `Gracias, Nicole. Tu lugar está reservado. Sábado 24 de octubre, 8:00 p. m.`;
     party.hidden = false;
     if (typeof confetti !== 'function' || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const colors = ['#6e8bff', '#c86dd7', '#ff9f6b', '#2997ff', '#f5f5f7'];
@@ -277,8 +278,7 @@
 
   form.addEventListener('submit', async e => {
     e.preventDefault();
-    const nombre = document.getElementById('rsvp-name').value.trim();
-    if (!nombre) return;
+    const nombre = 'Nicole';
     send.disabled = true;
     msg.textContent = 'Enviando tu confirmación…';
     try {
@@ -286,15 +286,15 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({
-          _subject: `${nombre} confirmó su asistencia a Noche Nube`,
+          _subject: '¡Nicole confirmó que asistirá! 🎉',
           _template: 'table',
           nombre,
           respuesta: 'Asistiré',
-          evento: 'Noche Nube · sábado 24 de octubre, 8:00 p. m.'
+          evento: 'Sábado 24 de octubre, 8:00 p. m.'
         })
       });
       if (!res.ok) throw new Error(res.status);
-      msg.textContent = `¡Listo, ${nombre}! Tu asistencia quedó confirmada.`;
+      msg.textContent = '¡Listo, Nicole! Tu asistencia quedó confirmada.';
       celebrar(nombre);
       form.hidden = true;
       no.hidden = true;
